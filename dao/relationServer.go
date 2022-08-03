@@ -6,17 +6,24 @@ import (
 	"github.com/RaymondCode/simple-demo/utils"
 )
 
-func RelationAction(relation utils.RelationAction) (err error) {
+func RelationAction(relationAction utils.RelationAction) (err error) {
 
-	userInfoId := FindUserId(relation.UserID)
-	userInfoToId := FindUserId(relation.UserToID)
+	userInfoId := FindUserId(relationAction.UserID)
+	userInfoToId := FindUserId(relationAction.UserToID)
 
-	if relation.ActionType == 1 { //关注
+	relation := Relation{
+		UserInfoID:   relationAction.UserID,
+		UserInfoToID: relationAction.UserToID,
+	}
+
+	if relationAction.ActionType == 1 { //关注
 		userInfoId.FollowCount += 1     //关注者 +1
 		userInfoToId.FollowerCount += 1 //粉丝 +1
-	} else if relation.ActionType == 2 { //取消关注
+		DB.Create(&relation)
+	} else if relationAction.ActionType == 2 { //取消关注
 		userInfoId.FollowCount -= 1     //关注者 +1
 		userInfoToId.FollowerCount -= 1 //粉丝 +1
+		DB.Delete(relation)
 	} else {
 		return errors.New("关注失败，未知错误")
 	}

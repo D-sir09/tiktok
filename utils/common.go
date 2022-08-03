@@ -99,7 +99,7 @@ type FavoriteVideoRequest struct {
 	ActionType int64 `json:"action_type"` //1-点赞，2-取消点赞
 }
 
-//RelationAction
+//Relation
 type RelationAction struct {
 	UserID     int64
 	UserToID   int64 `json:"to_user_id"`  //对方用户id
