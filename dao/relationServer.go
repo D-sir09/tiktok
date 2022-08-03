@@ -4,14 +4,20 @@ import (
 	"errors"
 	"fmt"
 	"github.com/RaymondCode/simple-demo/utils"
+	"log"
 )
 
 func RelationAction(relationAction utils.RelationAction) (err error) {
 
 	userInfoId := FindUserId(relationAction.UserID)
 	userInfoToId := FindUserId(relationAction.UserToID)
+	//判断数据库中重复插入相同的数据
+	err = FindFollowID(relationAction)
+	if err != nil {
+		return errors.New("你已经关注过了~")
+	}
 
-	relation := Relation{
+	relation := Relation{ //初始化插入数据
 		UserInfoID:   relationAction.UserID,
 		UserInfoToID: relationAction.UserToID,
 	}
@@ -43,18 +49,34 @@ func FindUserId(id int64) (userInfo *UserInfo) {
 	return userInfo
 }
 
+func FindFollowID(relationAction utils.RelationAction) error {
+	relation := Relation{}
+
+	userID := relationAction.UserID
+	userToId := relationAction.UserToID
+	err := DB.Where("user_info_id=? && user_info_to_id=?", userID, userToId).Find(&relation).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 //FollowList
-//func FindFollowList(id int64) (userInfo []UserInfo, err error) {
-//	relation := make([]Relation, 0)
-//	result := DB.Where("user_info_id=?", id).Find(&relation)
-//	if result.Error != nil {
-//		log.Println("FindFollowList had err")
-//		return nil, result.Error
-//	}
-//	log.Println("relation:", relation)
-//	//userInfo, err = IdFindFollowUserInfo(id)
-//	//if err != nil {
-//	//	return nil, errors.New("IdFindFollowUserInfo had error")
-//	//}
-//	return nil, nil
-//}
+func FindFollowList(id int64) (relation []Relation, err error) {
+	result := DB.Where("user_info_id=?", id).Find(&relation) //查找relation表中指定id的数据
+	if result.Error != nil {
+		log.Println("FindFollowList had err")
+		return nil, result.Error
+	}
+
+	log.Println("relation:", relation)
+
+	return relation, nil
+}
+
+func IdFindFollowUserInfo(id int64) (userInfo UserInfo) {
+	DB.Where("Id=?", id).Find(&userInfo)
+	log.Println("isFindFollowUserInfo userInfo: ", userInfo)
+	return userInfo
+}
