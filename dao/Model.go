@@ -9,6 +9,7 @@ type UserInfo struct {
 	Password      string `gorm:"type:varchar(32)"` //用户密码
 	FollowCount   int64  //关注总数
 	FollowerCount int64  //粉丝总数
+	IsFollow      bool   //是否已关注
 }
 
 //视频表

@@ -106,6 +106,12 @@ type RelationAction struct {
 	ActionType int64 `json:"action_type"` //1-点赞，2-取消点赞
 }
 
+//relation follow list
+type RelationFollowListResponse struct {
+	Response        //状态相关
+	UserList []User `json:"user_list"` //用户信息列表
+}
+
 //CommentList
 type Comment struct {
 	Id         int64  `json:"id"`          //评论id

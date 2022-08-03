@@ -32,6 +32,7 @@ func FindAllVideos(id int64) ([]Video, error) {
 	if len(videos) == 0 {
 		return nil, errors.New("无法找到视频")
 	}
+	//log.Println("result and videos:",result, videos)
 	return videos, nil
 }
 

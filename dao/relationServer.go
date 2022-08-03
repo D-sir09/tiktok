@@ -23,7 +23,7 @@ func RelationAction(relationAction utils.RelationAction) (err error) {
 	} else if relationAction.ActionType == 2 { //取消关注
 		userInfoId.FollowCount -= 1     //关注者 +1
 		userInfoToId.FollowerCount -= 1 //粉丝 +1
-		DB.Delete(relation)
+		DB.Where("user_info_id=? && user_info_to_id=?", relationAction.UserID, relationAction.UserToID).Delete(&relation)
 	} else {
 		return errors.New("关注失败，未知错误")
 	}
@@ -42,3 +42,19 @@ func FindUserId(id int64) (userInfo *UserInfo) {
 	}
 	return userInfo
 }
+
+//FollowList
+//func FindFollowList(id int64) (userInfo []UserInfo, err error) {
+//	relation := make([]Relation, 0)
+//	result := DB.Where("user_info_id=?", id).Find(&relation)
+//	if result.Error != nil {
+//		log.Println("FindFollowList had err")
+//		return nil, result.Error
+//	}
+//	log.Println("relation:", relation)
+//	//userInfo, err = IdFindFollowUserInfo(id)
+//	//if err != nil {
+//	//	return nil, errors.New("IdFindFollowUserInfo had error")
+//	//}
+//	return nil, nil
+//}

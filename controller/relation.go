@@ -5,7 +5,6 @@ import (
 	"github.com/RaymondCode/simple-demo/middleware"
 	"github.com/RaymondCode/simple-demo/utils"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -45,26 +44,19 @@ func RelationAction(c *gin.Context) {
 // FollowList all users have same follow list
 func FollowList(c *gin.Context) {
 
-	user_id := c.Query("user_id")
-	log.Println(user_id)
-	//user_list:=make([]utils.User,0)
-
-	//成功
-	c.JSON(http.StatusOK, UserListResponse{
-		Response: utils.Response{
-			StatusCode: 0,
-		},
-		UserList: []utils.User{DemoUser},
+	c.JSON(http.StatusOK, utils.Response{
+		StatusCode: 0,
+		StatusMsg:  "关注成功",
 	})
 }
 
 // FollowerList all users have same follower list
-func FollowerList(c *gin.Context) {
-	c.JSON(http.StatusOK, UserListResponse{
-		Response: utils.Response{
-			StatusCode: 0,
-		},
-		UserList: []utils.User{DemoUser},
-	})
-	//粉丝列表
-}
+//func FollowerList(c *gin.Context) {
+//	c.JSON(http.StatusOK, UserListResponse{
+//		Response: utils.Response{
+//			StatusCode: 0,
+//		},
+//		UserList: []utils.User{DemoUser},
+//	})
+//	//粉丝列表
+//}
