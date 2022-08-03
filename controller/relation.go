@@ -1,9 +1,12 @@
 package controller
 
 import (
+	"github.com/RaymondCode/simple-demo/dao"
+	"github.com/RaymondCode/simple-demo/middleware"
 	"github.com/RaymondCode/simple-demo/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 type UserListResponse struct {
@@ -13,18 +16,36 @@ type UserListResponse struct {
 
 // RelationAction no practical effect, just check if token is valid
 func RelationAction(c *gin.Context) {
-	token := c.Query("token")
+	claims := c.MustGet("claims").(*middleware.CustomClaims)
+	actionType, _ := strconv.ParseInt(c.Query("action_type"), 10, 64) //1-关注 2-取消关注
 
-	if _, exist := usersLoginInfo[token]; exist {
-		c.JSON(http.StatusOK, utils.Response{StatusCode: 0})
-	} else {
-		c.JSON(http.StatusOK, utils.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
+	userId := claims.Id                                        //发出请求的用户的 id
+	toId, _ := strconv.ParseInt(c.Query("to_user_id"), 10, 64) //所关注的用户的 id
+	//log.Println(userId, toId, actionType)
+
+	relation := utils.RelationAction{
+		UserID:     userId,
+		UserToID:   toId,
+		ActionType: actionType,
 	}
-	//等待补上关注
+	err := dao.RelationAction(relation)
+
+	if err != nil {
+		utils.ErrResponse(c, err.Error())
+	}
+
+	c.JSON(http.StatusOK, utils.Response{
+		StatusCode: 0,
+		StatusMsg:  "关注成功",
+	})
+
 }
 
 // FollowList all users have same follow list
 func FollowList(c *gin.Context) {
+
+	c.Query("user_id")
+
 	c.JSON(http.StatusOK, UserListResponse{
 		Response: utils.Response{
 			StatusCode: 0,

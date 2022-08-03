@@ -43,7 +43,7 @@ func Feed(c *gin.Context) {
 		result[i].CommentCount = v.CommentCount
 		result[i].Title = v.Title
 
-		user, err := dao.GetIdInfo(v.FkViUserinfoId)
+		user, err := dao.GetIdInfo(v.FkViUserinfoId) //使用外键查找作者信息
 		if err != nil {
 			c.JSON(http.StatusOK, utils.FeedResponse{
 				Response: utils.Response{
@@ -67,6 +67,7 @@ func Feed(c *gin.Context) {
 	if len(videos) != 0 {
 		nextTime = videos[len(videos)-1].CreatedAt.Unix()
 	}
+	fmt.Println("nextTime: ", nextTime)
 
 	c.JSON(http.StatusOK, utils.FeedResponse{
 		Response: utils.Response{
