@@ -1,11 +1,6 @@
 package controller
 
-import (
-	"github.com/RaymondCode/simple-demo/utils"
-	"github.com/gin-gonic/gin"
-	"net/http"
-)
-
+/*
 type CommentListResponse struct {
 	utils.Response
 	CommentList []utils.Comment `json:"comment_list,omitempty"`
@@ -46,3 +41,4 @@ func CommentList(c *gin.Context) {
 		CommentList: DemoComments,
 	})
 }
+*/

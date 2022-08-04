@@ -22,12 +22,14 @@ type Video struct {
 	FavoriteCount  int64     //视频的点赞总数
 	CommentCount   int64     //视频的评论总数
 	CreatedAt      time.Time //视频上传日期
+
 }
 
 //点赞表
 type Favorite struct {
 	UserInfoID int64 //外键
 	VideoId    int64 //外键
+	IsFavorite bool  `json:"is_favorite,omitempty"`
 }
 
 //评论表

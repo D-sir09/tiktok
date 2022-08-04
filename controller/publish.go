@@ -12,11 +12,6 @@ import (
 	"time"
 )
 
-type VideoListResponse struct {
-	utils.Response
-	VideoList []utils.Video `json:"video_list"`
-}
-
 // Publish check token then save upload file to utils directory
 func Publish(c *gin.Context) {
 	title := c.PostForm("title")
@@ -103,6 +98,7 @@ func PublishList(c *gin.Context) {
 		result[i].FavoriteCount = v.FavoriteCount
 		result[i].CommentCount = v.CommentCount
 		result[i].Title = v.Title
+		result[i].IsFavorite = dao.FindIsFavorite(claims.Id, v.Id)
 	}
 	//获取发布列表成功
 	c.JSON(http.StatusOK, utils.PublishListResponse{

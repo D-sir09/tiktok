@@ -42,7 +42,6 @@ func Feed(c *gin.Context) {
 		result[i].FavoriteCount = v.FavoriteCount
 		result[i].CommentCount = v.CommentCount
 		result[i].Title = v.Title
-
 		user, err := dao.GetIdInfo(v.FkViUserinfoId) //使用外键查找作者信息
 		if err != nil {
 			c.JSON(http.StatusOK, utils.FeedResponse{

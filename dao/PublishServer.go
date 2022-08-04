@@ -36,6 +36,16 @@ func FindAllVideos(id int64) ([]Video, error) {
 	return videos, nil
 }
 
+func FindIsFavorite(userId int64, videoId int64) bool {
+	favorite := Favorite{}
+	DB.Where("user_info_id=? && video_id=?", userId, videoId).Find(&favorite)
+
+	if favorite.IsFavorite {
+		return true
+	}
+	return false
+}
+
 //
 //func GetSnapshot(videoPath string, frameNum int) string {
 //	snapshotPath := ""
