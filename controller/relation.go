@@ -5,14 +5,10 @@ import (
 	"github.com/RaymondCode/simple-demo/middleware"
 	"github.com/RaymondCode/simple-demo/utils"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"strconv"
 )
-
-type UserListResponse struct {
-	utils.Response
-	UserList []utils.User `json:"user_list"`
-}
 
 // RelationAction no practical effect, just check if token is valid
 func RelationAction(c *gin.Context) {
@@ -51,13 +47,13 @@ func RelationAction(c *gin.Context) {
 func FollowList(c *gin.Context) {
 
 	userId, _ := strconv.ParseInt(c.Query("user_id"), 10, 64) //1-关注 2-取消关注
-
+	//查找user_info_id对应的relation表
 	relation, err := dao.FindFollowList(userId)
 	if err != nil {
 		utils.ErrResponse(c, err.Error())
 	}
 	userInfo := make([]dao.UserInfo, len(relation))
-	//通过关注关系表，查找UserInfo中的信息，并汇总成数组
+	//通过关注关系表，查找UserInfo中的 关注 信息，并汇总成数组
 	for i, v := range relation {
 		userInfo[i] = dao.IdFindFollowUserInfo(v.UserInfoToID)
 	}
@@ -78,13 +74,39 @@ func FollowList(c *gin.Context) {
 	})
 }
 
-// FollowerList all users have same follower list
-//func FollowerList(c *gin.Context) {
-//	c.JSON(http.StatusOK, UserListResponse{
-//		Response: utils.Response{
-//			StatusCode: 0,
-//		},
-//		UserList: []utils.User{DemoUser},
-//	})
-//	//粉丝列表
-//}
+//FollowerList all users have same follower list
+//粉丝列表
+func FollowerList(c *gin.Context) {
+
+	userId, _ := strconv.ParseInt(c.Query("user_id"), 10, 64) //1-关注 2-取消关注
+
+	log.Println("FollowerList userID: ", userId)
+	log.Println()
+	//查找user_info_to_id对应的relation表
+	relation, err := dao.FindFollowerList(userId)
+	if err != nil {
+		utils.ErrResponse(c, err.Error())
+	}
+	userInfo := make([]dao.UserInfo, len(relation))
+	//通过关注关系表，查找UserInfo中的 粉丝 信息，并汇总成数组
+	for i, v := range relation {
+		userInfo[i] = dao.IdFindFollowUserInfo(v.UserInfoID)
+	}
+
+	result := make([]utils.User, len(relation))
+	//把UserInfo表中的信息转成客户端指定的返回值（用户信息列表）
+	for i, v := range userInfo {
+		result[i].Id = v.Id
+		result[i].Name = v.Name
+		result[i].FollowCount = v.FollowCount
+		result[i].FollowerCount = v.FollowerCount
+		result[i].IsFollow = v.IsFollow
+	}
+
+	c.JSON(http.StatusOK, utils.RelationFollowListResponse{
+		Response: utils.Response{
+			StatusCode: 0,
+			StatusMsg:  "关注成功",
+		}, UserList: result,
+	})
+}

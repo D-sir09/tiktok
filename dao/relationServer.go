@@ -69,9 +69,7 @@ func FindFollowList(id int64) (relation []Relation, err error) {
 		log.Println("FindFollowList had err")
 		return nil, result.Error
 	}
-
-	log.Println("relation:", relation)
-
+	//log.Println("relation:", relation)
 	return relation, nil
 }
 
@@ -79,4 +77,15 @@ func IdFindFollowUserInfo(id int64) (userInfo UserInfo) {
 	DB.Where("Id=?", id).Find(&userInfo)
 	log.Println("isFindFollowUserInfo userInfo: ", userInfo)
 	return userInfo
+}
+
+//FollowerList
+func FindFollowerList(id int64) (relation []Relation, err error) {
+	result := DB.Where("user_info_to_id=?", id).Find(&relation)
+	if result.Error != nil {
+		log.Println("FindFollowerList had err")
+		return nil, result.Error
+	}
+	log.Println("relation:", relation)
+	return relation, nil
 }

@@ -112,6 +112,12 @@ type RelationFollowListResponse struct {
 	UserList []User `json:"user_list"` //用户信息列表
 }
 
+//relation follow list
+type RelationFollowerListResponse struct {
+	Response        //状态相关
+	UserList []User `json:"user_list"` //用户信息列表
+}
+
 //CommentList
 type Comment struct {
 	Id         int64  `json:"id"`          //评论id
