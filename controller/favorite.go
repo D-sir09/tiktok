@@ -24,7 +24,7 @@ func FavoriteAction(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, utils.Response{
-		StatusCode: 1,
+		StatusCode: 0,
 		StatusMsg:  "点赞成功",
 	})
 
@@ -53,7 +53,7 @@ func FavoriteList(c *gin.Context) {
 		if err != nil {
 			c.JSON(http.StatusOK, utils.FeedResponse{
 				Response: utils.Response{
-					StatusCode: 0,
+					StatusCode: -1,
 					StatusMsg:  err.Error(),
 				},
 				VideoList: []utils.Video{},
