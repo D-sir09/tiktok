@@ -22,7 +22,6 @@ type Video struct {
 	FavoriteCount  int64     //视频的点赞总数
 	CommentCount   int64     //视频的评论总数
 	CreatedAt      time.Time //视频上传日期
-
 }
 
 //点赞表
@@ -34,11 +33,11 @@ type Favorite struct {
 
 //评论表
 type Comment struct {
-	Id         int64     `gorm:"AUTO_INCREMENT"` //评论id
-	UserInfoID int64     //外键
-	VideoId    int64     //外键
-	Content    string    //评论内容
-	CreatedAt  time.Time //评论发布日期
+	Id         int64  `gorm:"AUTO_INCREMENT"` //评论id
+	UserInfoID int64  //外键
+	VideoId    int64  //外键
+	Content    string //评论内容
+	CreatedAt  string //评论发布日期
 }
 
 //关注表

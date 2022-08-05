@@ -128,8 +128,10 @@ type RelationFollowerListResponse struct {
 
 //comment action
 type CommentActionResponse struct {
-	Response //状态相关
+	Response         //状态相关
+	Comment  Comment `json:"comment,omitempty"`
 }
+
 type CommentActionRequest struct {
 	IdAndToken
 	VideoId     int64  `json:"video_id"`     //视频id

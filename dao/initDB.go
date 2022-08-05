@@ -31,10 +31,10 @@ func InitConn() {
 
 func InitModel(DB *gorm.DB) {
 	//自动迁移，无表则建表
-	DB.AutoMigrate(&UserInfo{})
-	DB.AutoMigrate(&Video{})
+	DB.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8").AutoMigrate(&UserInfo{}) //用户名可为中文
+	DB.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8").AutoMigrate(&Video{})    //视频标题需要可用中文
 	DB.AutoMigrate(&Favorite{})
-	DB.AutoMigrate(&Comment{})
+	DB.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8").AutoMigrate(&Comment{}) //评论信息需要设置可用中文
 	DB.AutoMigrate(&Relation{})
 	//设置外键
 	DB.Model(&Video{}).AddForeignKey("fk_vi_userinfo_id", "user_infos(id)", "RESTRICT", "RESTRICT")
