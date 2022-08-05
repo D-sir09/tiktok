@@ -15,8 +15,8 @@ func InsertVideo(id int64, filename string, title string) error {
 	return v.Insert()
 }
 
-func (v *Video) Insert() error {
-	err := DB.Model(&Video{}).Create(&v).Error
+func (video *Video) Insert() error {
+	err := DB.Model(&Video{}).Create(&video).Error
 	if err != nil {
 		err = errors.New("上传视频出错，也许视频名太长了")
 	}

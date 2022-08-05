@@ -126,24 +126,22 @@ type RelationFollowerListResponse struct {
 	UserList []User `json:"user_list"` //用户信息列表
 }
 
+//Comment
+type Comment struct {
+	Id         int64  `json:"id"`          //评论id
+	User       User   `json:"user"`        //User
+	Content    string `json:"content"`     //评论内容
+	CreateDate string `json:"create_date"` //评论发布日期，格式 mm-dd
+}
+
 //comment action
 type CommentActionResponse struct {
 	Response         //状态相关
 	Comment  Comment `json:"comment,omitempty"`
 }
 
-type CommentActionRequest struct {
-	IdAndToken
-	VideoId     int64  `json:"video_id"`     //视频id
-	ActionType  int32  `json:"action_type"`  //1-发布评论，2-删除评论
-	CommentText string `json:"comment_text"` //用户填写的评论内容，在action_type=1的时候使用
-	CommentId   int64  `json:"comment_id"`   //要删除的评论id，在action_type=2的时候使用
-}
-
 //CommentList
-type Comment struct {
-	Id         int64  `json:"id"`          //评论id
-	User       User   `json:"user"`        //User
-	Content    string `json:"content"`     //评论内容
-	CreateDate string `json:"create_date"` //评论发布日期，格式 mm-dd
+type CommentListResponse struct {
+	Response              //状态相关
+	CommentList []Comment `json:"comment_list,omitempty"`
 }

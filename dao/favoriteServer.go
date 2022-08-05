@@ -12,7 +12,7 @@ func FavoriteAction(userId int64, videoId int64, actionType int64) (err error) {
 	}
 
 	video := Video{}
-	DB.Where("id=?", videoId).Find(&video)
+	video.IdFindVideo(videoId)
 
 	if actionType == 1 {
 		//如果数据库中有这条记录，返回nil。

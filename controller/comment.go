@@ -5,14 +5,10 @@ import (
 	"github.com/RaymondCode/simple-demo/middleware"
 	"github.com/RaymondCode/simple-demo/utils"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"strconv"
 )
-
-type CommentListResponse struct {
-	utils.Response
-	CommentList []utils.Comment `json:"comment_list,omitempty"`
-}
 
 // CommentAction  用户提交评论接口
 func CommentAction(c *gin.Context) {
@@ -64,10 +60,44 @@ func CommentAction(c *gin.Context) {
 	})
 }
 
-// CommentList all videos have same demo comment list
+// CommentList
 func CommentList(c *gin.Context) {
-	c.JSON(http.StatusOK, CommentListResponse{
-		Response:    utils.Response{StatusCode: 0},
-		CommentList: DemoComments,
+	claims := c.MustGet("claims").(*middleware.CustomClaims)
+	log.Printf("用户id: %d 访问了 CommentList\n", claims.Id)
+
+	videoId, _ := strconv.ParseInt(c.Query("video_id"), 10, 64) //视频的id
+
+	//查找视频含有的所有评论
+	commentList, err := dao.FindCommentList(videoId)
+	if err != nil {
+		utils.ErrResponse(c, err.Error())
+		return
+	}
+
+	userInfo := make([]dao.UserInfo, len(commentList))
+	//查找评论用户的信息
+	for i, v := range commentList {
+		userInfo[i] = dao.FindCommentUser(v.UserInfoID)
+	}
+
+	result := make([]utils.Comment, len(commentList))
+	for i, v := range commentList {
+		result[i].Id = v.Id
+		result[i].Content = v.Content
+		result[i].CreateDate = v.CreatedAt
+		result[i].User = utils.User{
+			Id:            userInfo[i].Id,
+			Name:          userInfo[i].Name,
+			FollowCount:   userInfo[i].FollowCount,
+			FollowerCount: userInfo[i].FollowerCount,
+			IsFollow:      userInfo[i].IsFollow,
+		}
+	}
+
+	c.JSON(http.StatusOK, utils.CommentListResponse{
+		Response: utils.Response{
+			StatusCode: 0,
+		},
+		CommentList: result,
 	})
 }
