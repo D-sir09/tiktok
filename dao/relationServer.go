@@ -8,45 +8,55 @@ import (
 )
 
 func RelationAction(relationAction utils.RelationAction) (err error) {
-
-	userInfoId := FindUserId(relationAction.UserID)
-	userInfoToId := FindUserId(relationAction.UserToID)
-	//判断数据库中重复插入相同的数据
-	err = FindFollowID(relationAction)
-	if err != nil {
-		return errors.New("你已经关注过了~")
+	userInfoId, ok := FindUserId(relationAction.UserID)
+	if !ok {
+		log.Println("找不到已登陆的用户")
+		return errors.New("找不到已登陆的用户")
 	}
 
-	relation := Relation{ //初始化插入数据
-		UserInfoID:   relationAction.UserID,
-		UserInfoToID: relationAction.UserToID,
+	userInfoToId, exist := FindUserId(relationAction.UserToID)
+	if !exist {
+		log.Println("找不到视频作者")
+		return errors.New("找不到视频作者")
 	}
+
+	relation := Relation{}
+	relation.UserInfoID = relationAction.UserID
+	relation.UserInfoToID = relationAction.UserToID
 
 	if relationAction.ActionType == 1 { //关注
+		//判断数据库中是否存在相同的数据，避免重复
+		err = FindFollowID(relationAction)
+		if err != nil {
+			log.Println("你已经关注过了~")
+			return errors.New("你已经关注过了")
+		}
 		userInfoId.FollowCount += 1     //关注者 +1
 		userInfoToId.FollowerCount += 1 //粉丝 +1
-		DB.Create(&relation)
+		DB.Save(&relation)
 	} else if relationAction.ActionType == 2 { //取消关注
 		userInfoId.FollowCount -= 1     //关注者 +1
 		userInfoToId.FollowerCount -= 1 //粉丝 +1
 		DB.Where("user_info_id=? && user_info_to_id=?", relationAction.UserID, relationAction.UserToID).Delete(&relation)
 	} else {
+		log.Println("RelationAction 存在未知错误：", err)
 		return errors.New("关注失败，未知错误")
 	}
-
-	DB.Save(userInfoId)
-	DB.Save(userInfoToId)
+	//保存 UserInfo 表中粉丝，关注的变化
+	DB.Save(&userInfoId)
+	DB.Save(&userInfoToId)
 
 	return nil
 }
 
-func FindUserId(id int64) (userInfo *UserInfo) {
-	userInfo = &UserInfo{}
-	result := DB.Find(userInfo, "id=? ", id)
-	if result.Error != nil {
-		fmt.Println("FindUserId method is failed: ", result.Error)
+func FindUserId(id int64) (UserInfo, bool) {
+	userInfo := UserInfo{}
+	result := DB.Find(&userInfo, "id=? ", id).Error
+	if result != nil {
+		fmt.Println("FindUserId method is failed: ", result)
+		return UserInfo{}, false
 	}
-	return userInfo
+	return userInfo, true
 }
 
 func FindFollowID(relationAction utils.RelationAction) error {
@@ -55,11 +65,11 @@ func FindFollowID(relationAction utils.RelationAction) error {
 	userID := relationAction.UserID
 	userToId := relationAction.UserToID
 	err := DB.Where("user_info_id=? && user_info_to_id=?", userID, userToId).Find(&relation).Error
-	if err != nil {
-		return err
+	if err != nil { //record not found。没找到记录，即可以插入数据
+		return nil
 	}
 
-	return nil
+	return errors.New("已经关注过了")
 }
 
 //FollowList

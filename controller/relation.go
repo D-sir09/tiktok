@@ -14,26 +14,31 @@ import (
 func RelationAction(c *gin.Context) {
 	claims := c.MustGet("claims").(*middleware.CustomClaims)
 	actionType, _ := strconv.ParseInt(c.Query("action_type"), 10, 64) //1-关注 2-取消关注
-
+	//log.Println(c.Query("to_user_id"))获取了0
 	userId := claims.Id                                        //发出请求的用户的 id
 	toId, _ := strconv.ParseInt(c.Query("to_user_id"), 10, 64) //所关注的用户的 id
-	//log.Println(userId, toId, actionType)
 
 	//不可以自己关注自己
 	if userId == toId {
 		utils.ErrResponse(c, "不可以关注自己")
+		return
 	}
 
+	//整合客户端的请求参数
 	relation := utils.RelationAction{
 		UserID:     userId,
 		UserToID:   toId,
 		ActionType: actionType,
 	}
-	//插入数据库
+	log.Println("RelationAction relation= ", relation)
+	//操作数据库
 	err := dao.RelationAction(relation)
-
 	if err != nil {
-		utils.ErrResponse(c, err.Error())
+		c.JSON(http.StatusOK, utils.Response{
+			StatusCode: 0,
+			StatusMsg:  err.Error(),
+		})
+		return
 	}
 
 	c.JSON(http.StatusOK, utils.Response{

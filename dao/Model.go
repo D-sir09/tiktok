@@ -42,6 +42,6 @@ type Comment struct {
 
 //关注表
 type Relation struct {
-	UserInfoID   int64 //当前用户的 id
-	UserInfoToID int64 //被关注者的 id
+	UserInfoID   int64 `gorm:"default:0"` //当前用户的 id
+	UserInfoToID int64 `gorm:"default:0"` //被关注者的 id
 }

@@ -41,12 +41,11 @@ func (user *UserInfo) GetInfo() error {
 }
 
 //通过id和用户名，获取字段
-func GetInfo(id int64, name string) (userInfo *UserInfo, err error) {
-	userInfo = &UserInfo{}
-	result := DB.Where("id=? && name=?", id, name).Find(userInfo)
+func GetInfo(id int64, name string) (userInfo UserInfo, err error) {
+	result := DB.Where("id=? && name=?", id, name).Find(&userInfo)
 	fmt.Println(result.Error)
 	if result.Error != nil {
-		return nil, result.Error
+		return UserInfo{}, result.Error
 	}
 	return userInfo, nil
 }
@@ -66,11 +65,10 @@ func CheckUser(request utils.LoginRequest) (UserInfo, error) {
 }
 
 //通过用户id查找
-func GetIdInfo(id int64) (userInfo *UserInfo, err error) {
-	userInfo = &UserInfo{}
-	result := DB.Find(userInfo, "id=? ", id)
+func GetIdInfo(id int64) (userInfo UserInfo, err error) {
+	result := DB.Find(&userInfo, "id=?", id)
 	if result.Error != nil {
-		return nil, result.Error
+		return UserInfo{}, result.Error
 	}
 	return userInfo, nil
 }

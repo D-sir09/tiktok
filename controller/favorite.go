@@ -5,6 +5,7 @@ import (
 	"github.com/RaymondCode/simple-demo/middleware"
 	"github.com/RaymondCode/simple-demo/utils"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -36,6 +37,8 @@ func FavoriteList(c *gin.Context) {
 	_ = claims
 	userId, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
 	videos, err := dao.FindFavoriteVideosList(userId) //查询用户点过赞的作品的 videos 列表
+	log.Println(userId, videos, err)
+
 	if err != nil {
 		utils.ErrResponse(c, err.Error())
 	}

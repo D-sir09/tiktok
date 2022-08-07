@@ -18,3 +18,25 @@ func FindFeed() ([]Video, error) {
 	}
 	return videos, nil
 }
+
+//获取 favorite 数据库中，登录用户是否点赞了视频,关注了返回 true
+func FeedFindIsFav(userId int64, videoAuthId int64) bool {
+	favorite := Favorite{}
+	err := DB.Find(&favorite, "user_info_id=? && video_id=? && is_favorite=?", userId, videoAuthId, true).Error
+	if err != nil { //record not found
+		return false
+	}
+	return true
+}
+
+//获取 relation 数据库中，登录用户是否关注了视频作者,关注了返回 true
+func FeedFindIsFollow(userId int64, userToId int64) bool {
+	relation := Relation{}
+	err := DB.Find(&relation, "user_info_id=? && user_info_to_id=?",
+		userId, userToId).Error
+
+	if err != nil { //record not found
+		return false
+	}
+	return true
+}

@@ -5,7 +5,6 @@ import (
 	"github.com/RaymondCode/simple-demo/middleware"
 	"github.com/RaymondCode/simple-demo/utils"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -62,8 +61,7 @@ func CommentAction(c *gin.Context) {
 
 // CommentList
 func CommentList(c *gin.Context) {
-	claims := c.MustGet("claims").(*middleware.CustomClaims)
-	log.Printf("用户id: %d 访问了 CommentList\n", claims.Id)
+	//claims := c.MustGet("claims").(*middleware.CustomClaims)
 
 	videoId, _ := strconv.ParseInt(c.Query("video_id"), 10, 64) //视频的id
 

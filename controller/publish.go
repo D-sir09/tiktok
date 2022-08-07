@@ -56,10 +56,11 @@ func Publish(c *gin.Context) {
 	})
 }
 
-// PublishList all users have same publish video list
+// PublishList 打开个人页，会立即调用这个接口，内容显示在“作品”
 func PublishList(c *gin.Context) {
 	claims := c.MustGet("claims").(*middleware.CustomClaims)
 	videos, err := dao.FindAllVideos(claims.Id)
+	log.Println("publishList user_id: ", c.Query("user_id"))
 	if err != nil {
 		c.JSON(http.StatusOK, utils.PublishListResponse{
 			Response: utils.Response{
@@ -70,8 +71,8 @@ func PublishList(c *gin.Context) {
 		return
 	}
 	//当前视频的发布者信息
-	user, err := dao.GetInfo(claims.Id, claims.Name)
-	if err != nil {
+	user, er := dao.GetInfo(claims.Id, claims.Name)
+	if er != nil {
 		c.JSON(http.StatusOK, utils.PublishListResponse{
 			Response: utils.Response{
 				StatusCode: -1,
@@ -88,7 +89,6 @@ func PublishList(c *gin.Context) {
 		FollowerCount: user.FollowerCount,
 		IsFollow:      false,
 	}
-
 	result := make([]utils.Video, len(videos))
 	for i, v := range videos {
 		result[i].Id = v.Id
@@ -97,8 +97,8 @@ func PublishList(c *gin.Context) {
 		result[i].CoverUrl = v.CoverUrl
 		result[i].FavoriteCount = v.FavoriteCount
 		result[i].CommentCount = v.CommentCount
-		result[i].Title = v.Title
 		result[i].IsFavorite = dao.FindIsFavorite(claims.Id, v.Id)
+		result[i].Title = v.Title
 	}
 	//获取发布列表成功
 	c.JSON(http.StatusOK, utils.PublishListResponse{

@@ -105,13 +105,23 @@ func Login(c *gin.Context) {
 		}})
 }
 
+//在注册成功后会调用该接口（/douyin/user/）,拉取当前登录用户的全部信息，并存储到本地。
 //获取用户的 id、昵称，如果实现社交部分的功能，还会返回关注数和粉丝数
 func UserInfo(c *gin.Context) {
 	claims := c.MustGet("claims").(*middleware.CustomClaims)
+
 	userInfo, err := dao.GetInfo(claims.Id, claims.Name)
 	if err != nil {
 		utils.ErrResponse(c, err.Error())
 		return
+	}
+
+	user := utils.User{
+		Id:            userInfo.Id,
+		Name:          userInfo.Name,
+		FollowCount:   userInfo.FollowCount,
+		FollowerCount: userInfo.FollowerCount,
+		IsFollow:      false,
 	}
 
 	c.JSON(http.StatusOK, utils.UserResponse{
@@ -119,13 +129,7 @@ func UserInfo(c *gin.Context) {
 			StatusCode: 0,
 			StatusMsg:  "获取信息成功",
 		},
-		User: utils.User{
-			Id:            userInfo.Id,
-			Name:          userInfo.Name,
-			FollowCount:   userInfo.FollowCount,
-			FollowerCount: userInfo.FollowerCount,
-			IsFollow:      false,
-		},
+		User: user,
 	})
 
 }

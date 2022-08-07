@@ -56,11 +56,13 @@ func CommentDel(commentId int64) error {
 
 	err = DB.Delete(&comment).Error
 	if err != nil {
+		log.Printf("视频删除失败 err：%s\n", err)
 		return errors.New("视频删除失败")
 	}
 	video.CommentCount -= 1
 	err = DB.Save(&video).Update("comment_count").Error
 	if err != nil {
+		log.Printf("减少评论数量保存失败 err：%s\n", err)
 		return errors.New("保存失败：视频评论数量未减少")
 	}
 
