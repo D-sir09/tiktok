@@ -10,9 +10,11 @@ import (
 	"strconv"
 )
 
-// RelationAction no practical effect, just check if token is valid
+// RelationAction
 func RelationAction(c *gin.Context) {
 	claims := c.MustGet("claims").(*middleware.CustomClaims)
+	//log.Println("clams: ", claims)
+
 	actionType, _ := strconv.ParseInt(c.Query("action_type"), 10, 64) //1-关注 2-取消关注
 	//log.Println(c.Query("to_user_id"))获取了0
 	userId := claims.Id                                        //发出请求的用户的 id
@@ -48,7 +50,7 @@ func RelationAction(c *gin.Context) {
 
 }
 
-// FollowList all users have same follow list
+// FollowList
 func FollowList(c *gin.Context) {
 
 	userId, _ := strconv.ParseInt(c.Query("user_id"), 10, 64) //1-关注 2-取消关注
@@ -79,7 +81,7 @@ func FollowList(c *gin.Context) {
 	})
 }
 
-//FollowerList all users have same follower list
+//FollowerList
 //粉丝列表
 func FollowerList(c *gin.Context) {
 

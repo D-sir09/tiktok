@@ -6,16 +6,14 @@ import (
 	"github.com/RaymondCode/simple-demo/middleware"
 	"github.com/RaymondCode/simple-demo/utils"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	"path/filepath"
 	"time"
 )
 
-// Publish check token then save upload file to utils directory
+// Publish
 func Publish(c *gin.Context) {
 	title := c.PostForm("title")
-	log.Println(title)
 
 	claims := c.MustGet("claims").(*middleware.CustomClaims)
 	userInfo, err := dao.GetInfo(claims.Id, claims.Name)
@@ -60,7 +58,7 @@ func Publish(c *gin.Context) {
 func PublishList(c *gin.Context) {
 	claims := c.MustGet("claims").(*middleware.CustomClaims)
 	videos, err := dao.FindAllVideos(claims.Id)
-	log.Println("publishList user_id: ", c.Query("user_id"))
+	//log.Println("publishList user_id: ", c.Query("user_id"))
 	if err != nil {
 		c.JSON(http.StatusOK, utils.PublishListResponse{
 			Response: utils.Response{

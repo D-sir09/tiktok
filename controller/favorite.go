@@ -10,7 +10,7 @@ import (
 	"strconv"
 )
 
-// FavoriteAction no practical effect, just check if token is valid
+// FavoriteAction
 func FavoriteAction(c *gin.Context) {
 	claims := c.MustGet("claims").(*middleware.CustomClaims)
 
@@ -31,7 +31,7 @@ func FavoriteAction(c *gin.Context) {
 
 }
 
-// FavoriteList all users have same favorite video list
+// FavoriteList
 func FavoriteList(c *gin.Context) {
 	claims := c.MustGet("claims").(*middleware.CustomClaims)
 	_ = claims

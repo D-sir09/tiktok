@@ -9,7 +9,7 @@ import (
 func initRouter(r *gin.Engine) {
 	// utils directory is used to serve static resources
 	r.Static("/static", "./publish")
-	r.MaxMultipartMemory = 50 << 20 //限制每次处理文件所占用的最大内存（文件上传限制）为50M
+	r.MaxMultipartMemory = 20 << 20 //限制每次处理文件所占用的最大内存（文件上传限制）为20M
 	apiRouter := r.Group("/douyin")
 
 	// basic apis

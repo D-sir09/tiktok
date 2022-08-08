@@ -16,7 +16,6 @@ import (
 // test data: username=zhanglei, password=douyin
 
 // Register 新用户注册时，提供用户名，密码，昵称。用户名唯一，创建成功后返回用户 id 和权限token
-
 func Register(c *gin.Context) {
 	//获取客户端的请求参数
 	username := c.Query("username")
