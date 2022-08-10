@@ -33,14 +33,22 @@ func FavoriteAction(c *gin.Context) {
 
 // FavoriteList
 func FavoriteList(c *gin.Context) {
-	claims := c.MustGet("claims").(*middleware.CustomClaims)
-	_ = claims
+	//claims := c.MustGet("claims").(*middleware.CustomClaims)	//获取用户的点赞信息无需验证token
+
 	userId, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
 	videos, err := dao.FindFavoriteVideosList(userId) //查询用户点过赞的作品的 videos 列表
-	log.Println(userId, videos, err)
+	//log.Println(userId, videos, err)
 
 	if err != nil {
-		utils.ErrResponse(c, err.Error())
+		log.Println("FavoriteList FindVideoList err: ", err.Error())
+		c.JSON(http.StatusOK, utils.FeedResponse{
+			Response: utils.Response{
+				StatusCode: 0,
+				StatusMsg:  err.Error(),
+			},
+			VideoList: []utils.Video{},
+		})
+		return
 	}
 	result := make([]utils.Video, len(videos))
 	for i, v := range videos {
@@ -54,9 +62,10 @@ func FavoriteList(c *gin.Context) {
 
 		user, err := dao.GetIdInfo(v.FkViUserinfoId) //使用外键查找作者信息
 		if err != nil {
+			log.Println("FavoriteList getAuthInfo err: ", err.Error())
 			c.JSON(http.StatusOK, utils.FeedResponse{
 				Response: utils.Response{
-					StatusCode: -1,
+					StatusCode: 0,
 					StatusMsg:  err.Error(),
 				},
 				VideoList: []utils.Video{},

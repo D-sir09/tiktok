@@ -5,7 +5,6 @@ import (
 	"github.com/RaymondCode/simple-demo/utils"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 )
 
@@ -91,7 +90,7 @@ func JWTAuth(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	log.Println("recv tokens:", token)
+	//log.Println("recv tokens:", token)
 	j := NewJWT()
 	//解析token，并将PAYLOAD负载提取出来
 	claims, err := j.ParserToken(token)

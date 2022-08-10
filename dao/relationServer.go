@@ -51,7 +51,7 @@ func RelationAction(relationAction utils.RelationAction) (err error) {
 
 func FindUserId(id int64) (UserInfo, bool) {
 	userInfo := UserInfo{}
-	result := DB.Find(&userInfo, "id=? ", id).Error
+	result := DB.Where("id=?", id).Find(&userInfo).Error
 	if result != nil {
 		fmt.Println("FindUserId method is failed: ", result)
 		return UserInfo{}, false

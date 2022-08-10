@@ -1,8 +1,10 @@
 package dao
 
-import "testing"
+import (
+	"log"
+	"testing"
+)
 
 func TestFIndCommentList(t *testing.T) {
-	video := Video{}
-	video.IdFindVideo(4)
+	log.Println(getFilePath())
 }

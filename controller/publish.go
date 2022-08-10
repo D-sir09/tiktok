@@ -6,12 +6,14 @@ import (
 	"github.com/RaymondCode/simple-demo/middleware"
 	"github.com/RaymondCode/simple-demo/utils"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"path/filepath"
+	"strconv"
 	"time"
 )
 
-// Publish
+//Publish
 func Publish(c *gin.Context) {
 	title := c.PostForm("title")
 
@@ -35,16 +37,20 @@ func Publish(c *gin.Context) {
 
 	saveFile := filepath.Join("./publish/", finalName)
 	if err := c.SaveUploadedFile(data, saveFile); err != nil {
-		utils.ErrResponse(c, err.Error())
+		c.JSON(http.StatusOK, utils.Response{
+			StatusCode: 0,
+			StatusMsg:  finalName + "  " + err.Error(),
+		})
 		return
 	}
-
-	//snapshotPath := dao.GetSnapshot(saveFile, 1)
 
 	//存入数据库
 	err = dao.InsertVideo(userInfo.Id, finalName, title)
 	if err != nil {
-		utils.ErrResponse(c, err.Error())
+		c.JSON(http.StatusOK, utils.Response{
+			StatusCode: 0,
+			StatusMsg:  err.Error(),
+		})
 		return
 	}
 
@@ -54,32 +60,36 @@ func Publish(c *gin.Context) {
 	})
 }
 
-// PublishList 打开个人页，会立即调用这个接口，内容显示在“作品”
+// PublishList 打开个人页，会立即调用这个接口，内容显示在“作品”。
+//可以从“我”打开个人页，也可以从首页视频打开视频作者的个人页
 func PublishList(c *gin.Context) {
-	claims := c.MustGet("claims").(*middleware.CustomClaims)
-	videos, err := dao.FindAllVideos(claims.Id)
-	//log.Println("publishList user_id: ", c.Query("user_id"))
+
+	userId, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
+	log.Println("PublishList userId: ", userId)
+
+	videos, err := dao.FindAllVideos(userId)
+	log.Println("publishList videos: ", videos)
 	if err != nil {
 		c.JSON(http.StatusOK, utils.PublishListResponse{
 			Response: utils.Response{
-				StatusCode: -1,
+				StatusCode: 0,
 				StatusMsg:  err.Error()},
 			VideoList: []utils.Video{},
 		})
 		return
 	}
 	//当前视频的发布者信息
-	user, er := dao.GetInfo(claims.Id, claims.Name)
+	user, er := dao.GetVideoAuthInfo(userId)
 	if er != nil {
 		c.JSON(http.StatusOK, utils.PublishListResponse{
 			Response: utils.Response{
-				StatusCode: -1,
+				StatusCode: 0,
 				StatusMsg:  err.Error()},
 			VideoList: []utils.Video{},
 		})
 		return
 	}
-
+	log.Println("publishList user: ", userId)
 	Author := utils.User{
 		Id:            user.Id,
 		Name:          user.Name,
@@ -95,14 +105,16 @@ func PublishList(c *gin.Context) {
 		result[i].CoverUrl = v.CoverUrl
 		result[i].FavoriteCount = v.FavoriteCount
 		result[i].CommentCount = v.CommentCount
-		result[i].IsFavorite = dao.FindIsFavorite(claims.Id, v.Id)
+		result[i].IsFavorite = dao.FindIsFavorite(userId, v.Id)
 		result[i].Title = v.Title
 	}
 	//获取发布列表成功
 	c.JSON(http.StatusOK, utils.PublishListResponse{
 		Response: utils.Response{
 			StatusCode: 0,
+			StatusMsg:  "获取用户作品成功",
 		},
 		VideoList: result,
 	})
+	log.Println("PublishList 获取发布列表成功")
 }

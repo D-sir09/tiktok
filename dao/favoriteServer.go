@@ -51,15 +51,13 @@ func FindFavoriteInfo(favorite *Favorite) error {
 
 //favorite list
 func FindFavoriteVideosList(userId int64) (videos []Video, err error) {
-	InitConn()
-
 	favorite := make([]Favorite, 0)
 	video := Video{}
 	//工具用户 id 查找favorites表，获取用户点赞过的视频的id
 	err = DB.Where("user_info_id=? && is_favorite=?", userId, true).Find(&favorite).Error
 
 	if err != nil { //record not exist
-		return nil, errors.New("此用户未点赞过如何作品")
+		return nil, errors.New("此用户未点赞过任何作品")
 	}
 	//工具videoId，查找videos表的信息，结果存入videos切片
 	videos = make([]Video, len(favorite))
