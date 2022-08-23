@@ -41,6 +41,7 @@ func FavoriteList(c *gin.Context) {
 
 	if err != nil {
 		utils.ErrResponse(c, err.Error())
+		return
 	}
 	result := make([]utils.Video, len(videos))
 	for i, v := range videos {

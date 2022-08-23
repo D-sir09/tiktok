@@ -55,6 +55,7 @@ func Publish(c *gin.Context) {
 }
 
 // PublishList 打开个人页，会立即调用这个接口，内容显示在“作品”
+//可以从“我”打开个人页，也可以从首页视频打开视频作者的个人页
 func PublishList(c *gin.Context) {
 	claims := c.MustGet("claims").(*middleware.CustomClaims)
 	videos, err := dao.FindAllVideos(claims.Id)

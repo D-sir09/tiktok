@@ -51,8 +51,6 @@ func FindFavoriteInfo(favorite *Favorite) error {
 
 //favorite list
 func FindFavoriteVideosList(userId int64) (videos []Video, err error) {
-	InitConn()
-
 	favorite := make([]Favorite, 0)
 	video := Video{}
 	//工具用户 id 查找favorites表，获取用户点赞过的视频的id

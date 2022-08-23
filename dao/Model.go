@@ -1,6 +1,8 @@
 package dao
 
-import "time"
+import (
+	"time"
+)
 
 //用户表
 type UserInfo struct {
@@ -45,3 +47,52 @@ type Relation struct {
 	UserInfoID   int64 `gorm:"default:0"` //当前用户的 id
 	UserInfoToID int64 `gorm:"default:0"` //被关注者的 id
 }
+
+/*
+//oss 配置
+type UploadConfOss struct {
+	Host            string //根域名
+	Endpoint        string
+	AccessKeyId     string
+	AccessKeySecret string
+	BucketName      string
+}
+
+
+	func uploadfileToOss(c *gin.Context, file *multipart.FileHeader, filename string) (err error, host, ossPathFileName string) {
+	host = UploadConfig.UploadConfOss.Host
+	err, _, localPathFileName := uploadfileToLocal(c, file, filename)
+	if err != nil {
+		err = errors.New(fmt.Sprintf("上传失败，%v", err))
+	}
+
+	ossPath := path.Join("upload", time.Now().Format("20060102"))
+	ossPathFileName = path.Join(ossPath, file.Filename)
+	// 创建OSSClient实例。
+	client, err := oss.New(UploadConfig.UploadConfOss.Endpoint, UploadConfig.UploadConfOss.AccessKeyId, UploadConfig.UploadConfOss.AccessKeySecret)
+	if err != nil {
+		os.Remove(localPathFileName)
+		err = errors.New(fmt.Sprintf("文件上传服务器失败. err:%s", err.Error()))
+		return
+	}
+	// 获取存储空间。
+	bucket, err := client.Bucket(UploadConfig.UploadConfOss.BucketName)
+	if err != nil {
+		os.Remove(localPathFileName)
+		err = errors.New(fmt.Sprintf("文件上传云端失败. err:%s", err.Error()))
+		return
+	}
+	// 上传文件。
+	err = bucket.PutObjectFromFile(ossPathFileName, localPathFileName)
+	if err != nil {
+		os.Remove(localPathFileName)
+		err = errors.New(fmt.Sprintf("文件上传云端失败. err:%s", err.Error()))
+		return
+	}
+	err = os.Remove(localPathFileName) //如果本地不想删除,可以注释了
+	if err != nil {
+		fmt.Println(err)
+	}
+	return
+}
+*/

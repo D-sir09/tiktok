@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"errors"
 	"fmt"
 	"github.com/RaymondCode/simple-demo/utils"
 )
@@ -66,9 +67,9 @@ func CheckUser(request utils.LoginRequest) (UserInfo, error) {
 
 //通过用户id查找
 func GetIdInfo(id int64) (userInfo UserInfo, err error) {
-	result := DB.Find(&userInfo, "id=?", id)
-	if result.Error != nil {
-		return UserInfo{}, result.Error
+	result := DB.Where("id=?", id).Find(&userInfo).Error
+	if result != nil { //record not found
+		return UserInfo{}, errors.New("找不到视频发布者")
 	}
 	return userInfo, nil
 }

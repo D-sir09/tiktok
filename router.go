@@ -13,12 +13,12 @@ func initRouter(r *gin.Engine) {
 	apiRouter := r.Group("/douyin")
 
 	// basic apis
+	apiRouter.GET("/feed/", controller.Feed) //不验证令牌，就不知道登录用户的id，验证令牌，不登录就无法刷视频
 	apiRouter.POST("/user/register/", controller.Register)
 	apiRouter.POST("/user/login/", controller.Login)
 
 	apiRouter.Use(middleware.JWTAuth)
 	{
-		apiRouter.GET("/feed/", controller.Feed) //不验证令牌，就不知道登录用户的id，验证令牌，不登录就无法刷视频
 		apiRouter.GET("/user/", controller.UserInfo)
 		apiRouter.POST("/publish/action/", controller.Publish)
 		apiRouter.GET("/publish/list/", controller.PublishList)

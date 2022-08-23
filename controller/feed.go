@@ -3,9 +3,9 @@ package controller
 import (
 	"fmt"
 	"github.com/RaymondCode/simple-demo/dao"
-	"github.com/RaymondCode/simple-demo/middleware"
 	"github.com/RaymondCode/simple-demo/utils"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 )
 
@@ -21,10 +21,12 @@ func Feed(c *gin.Context) {
 	}*/
 	//查找视频列表
 	token := c.Query("token")
-
 	videos, err := dao.FindFeed()
+	log.Println(videos)
+
 	//无视频数据或查找出错，返回错误信息及空视频结构体
 	if err != nil {
+		log.Println("无视频数据")
 		c.JSON(http.StatusOK, utils.FeedResponse{
 			Response: utils.Response{
 				StatusCode: 0,
@@ -43,7 +45,7 @@ func Feed(c *gin.Context) {
 		result[i].CoverUrl = v.CoverUrl
 		result[i].FavoriteCount = v.FavoriteCount
 		result[i].CommentCount = v.CommentCount
-		result[i].IsFavorite = false
+		result[i].IsFavorite = dao.FeedFindIsFav(token, v.Id)
 		result[i].Title = v.Title
 		user, err := dao.GetIdInfo(v.FkViUserinfoId) //使用外键查找视频作者信息
 		if err != nil {
@@ -62,23 +64,11 @@ func Feed(c *gin.Context) {
 			Name:          user.Name,
 			FollowCount:   user.FollowCount,
 			FollowerCount: user.FollowerCount,
-			IsFollow:      false,
+			IsFollow:      dao.FeedFindIsFollow(token, v.Id),
 		}
 	}
-
-	if token != "" { //若用户已登录，获取是否已点赞,是否关注了视频作者
-		claims := c.MustGet("claims").(*middleware.CustomClaims)
-		for i := range videos {
-			//获取 favorite 数据库中，当前登录用户是否点赞了视频
-			isFav := dao.FeedFindIsFav(claims.Id, result[i].Id)
-			result[i].IsFavorite = isFav
-
-			//获取 relation 数据库中，当前登录用户是否关注了视频作者
-			isFol := dao.FeedFindIsFollow(claims.Id, result[i].Author.Id)
-			result[i].Author = utils.User{
-				IsFollow: isFol,
-			}
-		}
+	for i := range result {
+		log.Println(result[i].Author)
 	}
 
 	var nextTime int64
