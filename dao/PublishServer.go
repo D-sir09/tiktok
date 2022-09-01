@@ -2,6 +2,7 @@ package dao
 
 import (
 	"errors"
+	"log"
 )
 
 /*
@@ -96,6 +97,16 @@ func FindIsFavorite(userId int64, videoId int64) bool {
 		return true
 	}
 	return false
+}
+
+func GetVideoAuthInfo(id int64) (UserInfo, error) {
+	userInfo := UserInfo{}
+	err := DB.Where("id=?", id).Find(&userInfo).Error
+	if err != nil {
+		log.Println("publishList GetVideoAuthInfo had err: ", err)
+		return UserInfo{}, errors.New("找不到视频发布者")
+	}
+	return userInfo, nil
 }
 
 //

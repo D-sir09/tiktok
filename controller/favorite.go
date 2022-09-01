@@ -33,13 +33,14 @@ func FavoriteAction(c *gin.Context) {
 
 // FavoriteList
 func FavoriteList(c *gin.Context) {
-	claims := c.MustGet("claims").(*middleware.CustomClaims)
-	_ = claims
+	//claims := c.MustGet("claims").(*middleware.CustomClaims)
+	//_ = claims
 	userId, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
 	videos, err := dao.FindFavoriteVideosList(userId) //查询用户点过赞的作品的 videos 列表
 	log.Println(userId, videos, err)
 
 	if err != nil {
+		log.Println("FavoriteList FindVideoList err: ", err.Error())
 		utils.ErrResponse(c, err.Error())
 		return
 	}

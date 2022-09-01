@@ -142,9 +142,9 @@ func GenerateToken(c *gin.Context, username string, id int64) (token string, err
 		Name: username,
 		Id:   id,
 		StandardClaims: jwt2.StandardClaims{
-			NotBefore: time.Now().Unix() - 1000,              // 签名生效时间
-			ExpiresAt: time.Now().Add(time.Hour * 72).Unix(), // 签名过期时间
-			Issuer:    "wdh.top",                             // 签名颁发者
+			NotBefore: time.Now().Unix() - 1000,               // 签名生效时间
+			ExpiresAt: time.Now().Add(time.Hour * 168).Unix(), // 签名过期时间(7天)
+			Issuer:    "wdh.top",                              // 签名颁发者
 		},
 	}
 

@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"path/filepath"
+	"strconv"
 	"time"
 )
 
@@ -57,8 +58,10 @@ func Publish(c *gin.Context) {
 // PublishList 打开个人页，会立即调用这个接口，内容显示在“作品”
 //可以从“我”打开个人页，也可以从首页视频打开视频作者的个人页
 func PublishList(c *gin.Context) {
-	claims := c.MustGet("claims").(*middleware.CustomClaims)
-	videos, err := dao.FindAllVideos(claims.Id)
+	//claims := c.MustGet("claims").(*middleware.CustomClaims)
+	userId, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
+
+	videos, err := dao.FindAllVideos(userId)
 	//log.Println("publishList user_id: ", c.Query("user_id"))
 	if err != nil {
 		c.JSON(http.StatusOK, utils.PublishListResponse{
@@ -70,7 +73,7 @@ func PublishList(c *gin.Context) {
 		return
 	}
 	//当前视频的发布者信息
-	user, er := dao.GetInfo(claims.Id, claims.Name)
+	user, er := dao.GetVideoAuthInfo(userId)
 	if er != nil {
 		c.JSON(http.StatusOK, utils.PublishListResponse{
 			Response: utils.Response{
@@ -96,7 +99,7 @@ func PublishList(c *gin.Context) {
 		result[i].CoverUrl = v.CoverUrl
 		result[i].FavoriteCount = v.FavoriteCount
 		result[i].CommentCount = v.CommentCount
-		result[i].IsFavorite = dao.FindIsFavorite(claims.Id, v.Id)
+		result[i].IsFavorite = dao.FindIsFavorite(userId, v.Id)
 		result[i].Title = v.Title
 	}
 	//获取发布列表成功

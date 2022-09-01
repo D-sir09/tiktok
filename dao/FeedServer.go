@@ -22,12 +22,13 @@ func FindFeed() ([]Video, error) {
 
 //获取 favorite 数据库中，登录用户是否点赞了视频,关注了返回 true
 func FeedFindIsFav(token string, videoId int64) bool {
-	findJwt := middleware.NewJWT()
-	claims, _ := findJwt.ParserToken(token)
 	if len(token) != 0 {
+		findJwt := middleware.NewJWT()
+		claims, _ := findJwt.ParserToken(token)
 		userId := claims.Id
 		favorite := Favorite{}
 		err := DB.Find(&favorite, "user_info_id=? && video_id=? && is_favorite=?", userId, videoId, true).Error
+		//若数据库中无该用户的关注信息
 		if err != nil { //record not found
 			return false
 		}
